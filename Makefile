@@ -1,5 +1,6 @@
 all:
-	yarn build
-	yarn start
+	npm install
+	npm run build
+	npm run start
 start:
-	yarn start
+	npm run start
