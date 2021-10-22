@@ -7,9 +7,9 @@ dotenv.config({
 import mongoose from "mongoose";
 import app from "./app";
 
-let connectionString = "mongodb://localhost:27017/djone-api";
+let connectionString = "mongodb://localhost:27017/adjonata.api";
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production" && process.env.CONNECTION) {
   connectionString = process.env.CONNECTION;
 }
 
