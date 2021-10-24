@@ -21,7 +21,7 @@ mongoose
     useFindAndModify: false
   })
   .then(() => {
-    let port: number = 8081;
+    let port: number = 8080;
 
     app.listen(port, () => {
       console.log(`Server running on port ${port}!`);
