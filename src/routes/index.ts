@@ -9,6 +9,17 @@ import AuthRouter from "./auth.routes";
 
 const router = Router();
 
+// Health Checker
+router.get("/", (request, response) => {
+  const data = {
+    uptime: process.uptime(),
+    message: "Ok",
+    date: new Date()
+  };
+
+  return response.status(200).send(data);
+});
+
 router.use("/about", AboutRouter);
 router.use("/knowledge", KnowledgeRouter);
 router.use("/project", ProjectRouter);
