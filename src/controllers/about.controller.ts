@@ -5,7 +5,7 @@ export default {
   async getter(request: Request, response: Response) {
     return await About.findOne()
       .sort("-id")
-      .then(res => {
+      .then((res) => {
         if (!res) {
           return response.status(400).json({
             msg: "Not found"
@@ -14,22 +14,21 @@ export default {
 
         return response.status(200).json(res);
       })
-      .catch(err => {
+      .catch((err) => {
         return response.status(500).json(err);
       });
   },
 
   async create(request: Request, response: Response) {
-    const { description, knowledges }: IAbout = request.body;
+    const { description }: IAbout = request.body;
 
     return await About.create({
-      description,
-      knowledges
+      description
     })
-      .then(res => {
+      .then((res) => {
         return response.status(200).json(res);
       })
-      .catch(err => {
+      .catch((err) => {
         return response.status(500).json(err);
       });
   }
