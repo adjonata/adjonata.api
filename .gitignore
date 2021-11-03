@@ -1,3 +1,5 @@
 dist
 .env
 *.log
+node_modules
+*.pem
