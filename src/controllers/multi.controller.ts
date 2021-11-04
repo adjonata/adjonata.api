@@ -8,7 +8,7 @@ import Social from "../models/social.model";
 export default {
   async getter(request: Request, response: Response) {
     try {
-      const about = await About.findOne().sort("-id");
+      const about = await About.findOne().sort("-createdIn");
       const knowledges = await Knowledges.find();
       const projects = await Projects.find();
       const social = await Social.find();
