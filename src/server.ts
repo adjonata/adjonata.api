@@ -1,8 +1,11 @@
 import * as dotenv from "dotenv";
+import fs from "fs";
 
-dotenv.config({
-  path: __dirname + "/../.env"
-});
+if (fs.existsSync(__dirname + "/../.env")) {
+  dotenv.config({
+    path: __dirname + "/../.env"
+  });
+}
 
 import mongoose from "mongoose";
 import app from "./app";
