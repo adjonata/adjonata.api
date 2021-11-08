@@ -4,7 +4,7 @@ declare global {
       NODE_ENV: "production" | "development";
       CONNECTION: string;
       ENABLE_REGISTRATION: "true" | "false";
-      PRODUCTION_PORT: string;
+      PORT: string;
     }
   }
 }
