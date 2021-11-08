@@ -11,7 +11,8 @@ import mongoose from "mongoose";
 import app from "./app";
 
 function createServer(): void {
-  const port = parseInt(process.env.PRODUCTION_PORT);
+  const altPort = process.env.NODE_ENV === "production" ? 80 : 8080;
+  const port = parseInt(`${process.env.PORT || altPort}`);
 
   app.listen(port, () => {
     console.log(`Application runing on port ${port}`);
