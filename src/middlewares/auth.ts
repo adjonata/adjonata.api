@@ -11,14 +11,14 @@ const verifyJWT = (
   next: NextFunction
 ) => {
   if ("authorization" in request.headers === false) {
-    return response.status(402).json({ msg: "No token provided." });
+    return response.status(410).json({ msg: "No token provided." });
   }
 
   const token = request.headers.authorization;
 
   jwt.verify(String(token), String(process.env.SECRET), (error, decoded) => {
     if (error) {
-      return response.status(500).json({
+      return response.status(410).json({
         msg: "Failed to authenticate header token"
       });
     }
