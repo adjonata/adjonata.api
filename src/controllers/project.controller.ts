@@ -7,7 +7,8 @@ export default {
    */
   async getter(request: Request, response: Response) {
     return await Projects.find()
-      .then(res => {
+      .sort({ spotlight: "desc" })
+      .then((res) => {
         if (!res) {
           return response.status(400).json({
             msg: "Is Empty"
@@ -16,7 +17,7 @@ export default {
 
         return response.status(200).json(res);
       })
-      .catch(err => response.status(500).json(err));
+      .catch((err) => response.status(500).json(err));
   },
 
   /**
@@ -35,8 +36,8 @@ export default {
     const body = { image, title, description, link, spotlight, color };
 
     return await Projects.create(body)
-      .then(res => response.status(200).json(res))
-      .catch(err => response.status(500).json(err));
+      .then((res) => response.status(200).json(res))
+      .catch((err) => response.status(500).json(err));
   },
 
   /**
@@ -44,14 +45,8 @@ export default {
    */
   async edit(request: Request, response: Response) {
     const { id } = request.params;
-    const {
-      image,
-      title,
-      description,
-      link,
-      spotlight,
-      color
-    }: IProject = request.body;
+    const { image, title, description, link, spotlight, color }: IProject =
+      request.body;
 
     const query = {
       _id: id
@@ -60,8 +55,8 @@ export default {
     const body = { image, title, description, link, spotlight, color };
 
     return await Projects.findOneAndUpdate(query, body)
-      .then(res => response.status(200).json({ msg: "Success in edit" }))
-      .catch(err => response.status(400).json({ msg: "Project not found" }));
+      .then((res) => response.status(200).json({ msg: "Success in edit" }))
+      .catch((err) => response.status(400).json({ msg: "Project not found" }));
   },
 
   /**
@@ -75,7 +70,7 @@ export default {
     };
 
     return await Projects.findOneAndDelete(query)
-      .then(res => response.status(200).json({ msg: "Success in delete" }))
-      .catch(err => response.status(400).json({ msg: "Project not found" }));
+      .then((res) => response.status(200).json({ msg: "Success in delete" }))
+      .catch((err) => response.status(400).json({ msg: "Project not found" }));
   }
 };
