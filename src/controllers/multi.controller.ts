@@ -1,26 +1,27 @@
 import { Request, Response } from "express";
+import { StatusCodes } from "../utils/http";
 
-import About from "../models/about.model";
-import Knowledges from "../models/knowledge.model";
-import Projects from "../models/project.model";
-import Social from "../models/social.model";
+import AboutService from "../services/about.service";
+import KnowledgeService from "../services/knowledge.service";
+import ProjectService from "../services/project.service";
+import SocialService from "../services/social.service";
 
 export default {
-  async getter(request: Request, response: Response) {
+  async getter(_request: Request, response: Response) {
     try {
-      const about = await About.findOne().sort("-createdIn");
-      const knowledges = await Knowledges.find();
-      const projects = await Projects.find().sort({ spotlight: "desc" });
-      const social = await Social.find();
+      const about = await AboutService.getter();
+      const knowledges = await KnowledgeService.list();
+      const projects = await ProjectService.list();
+      const social = await SocialService.list();
 
-      return response.status(200).json({
+      return response.status(StatusCodes.SUCCESS).json({
         about,
         knowledges,
         projects,
         social
       });
     } catch (err) {
-      return response.status(500).json(err);
+      return response.status(StatusCodes.SERVER_ERROR).json(err);
     }
   }
 };
