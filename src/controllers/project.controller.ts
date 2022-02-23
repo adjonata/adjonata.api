@@ -1,76 +1,124 @@
-import Projects, { IProject } from "../models/project.model";
+import ProjectService, { ProjectCreateBody } from "../services/project.service";
 import { Request, Response } from "express";
+import { createApiMessage, StatusCodes } from "../utils/http";
+
+interface ProjectCreateRequest extends Request {
+  body: ProjectCreateBody;
+}
+interface ProjectEditRequest extends ProjectCreateRequest {
+  params: {
+    id: string;
+  };
+}
+interface ProjectDeleteRequest extends Request {
+  params: {
+    id: string;
+  };
+}
 
 export default {
   /**
    * Get all Projects
    */
-  async getter(request: Request, response: Response) {
-    return await Projects.find()
-      .sort({ spotlight: "desc" })
-      .then((res) => {
-        if (!res) {
-          return response.status(400).json({
-            msg: "Is Empty"
-          });
-        }
+  async getter(_request: Request, response: Response) {
+    try {
+      const projects = await ProjectService.list();
 
-        return response.status(200).json(res);
-      })
-      .catch((err) => response.status(500).json(err));
+      return response.status(StatusCodes.SUCCESS).json(projects);
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   },
 
   /**
    * Create Project
    */
-  async create(request: Request, response: Response) {
-    const {
-      image,
-      title,
-      description,
-      link,
-      spotlight = false,
-      color
-    }: IProject = request.body;
+  async create(request: ProjectCreateRequest, response: Response) {
+    try {
+      const {
+        image,
+        link,
+        spotlight,
+        title,
+        color = "#89eb34",
+        description = ""
+      } = request.body;
 
-    const body = { image, title, description, link, spotlight, color };
+      const project = await ProjectService.create({
+        image,
+        link,
+        spotlight,
+        title,
+        color,
+        description
+      });
 
-    return await Projects.create(body)
-      .then((res) => response.status(200).json(res))
-      .catch((err) => response.status(500).json(err));
+      return response.status(StatusCodes.SUCCESS).json(project);
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   },
 
   /**
    * Edit Project
    */
-  async edit(request: Request, response: Response) {
-    const { id } = request.params;
-    const { image, title, description, link, spotlight, color }: IProject =
-      request.body;
+  async edit(request: ProjectEditRequest, response: Response) {
+    try {
+      const { id } = request.params;
+      const {
+        image,
+        link,
+        spotlight,
+        title,
+        color = "#89eb34",
+        description = ""
+      } = request.body;
 
-    const query = {
-      _id: id
-    };
+      const body = {
+        image,
+        link,
+        spotlight,
+        title,
+        color,
+        description
+      };
 
-    const body = { image, title, description, link, spotlight, color };
-
-    return await Projects.findOneAndUpdate(query, body)
-      .then((res) => response.status(200).json({ msg: "Success in edit" }))
-      .catch((err) => response.status(400).json({ msg: "Project not found" }));
+      return await ProjectService.edit(id, body)
+        .then(() =>
+          response
+            .status(StatusCodes.SUCCESS)
+            .json(createApiMessage("Project has been updated"))
+        )
+        .catch(() =>
+          response
+            .status(StatusCodes.NOT_FOUND)
+            .json(createApiMessage("Project not found"))
+        );
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   },
 
   /**
    * Delete Project
    */
-  async delete(request: Request, response: Response) {
-    const { id } = request.params;
+  async delete(request: ProjectDeleteRequest, response: Response) {
+    try {
+      const { id } = request.params;
 
-    const query = {
-      _id: id
-    };
-
-    return await Projects.findOneAndDelete(query)
-      .then((res) => response.status(200).json({ msg: "Success in delete" }))
-      .catch((err) => response.status(400).json({ msg: "Project not found" }));
+      return await ProjectService.delete(id)
+        .then(() =>
+          response
+            .status(StatusCodes.SUCCESS)
+            .json(createApiMessage("Project has been deleted"))
+        )
+        .catch(() =>
+          response
+            .status(StatusCodes.NOT_FOUND)
+            .json(createApiMessage("Project not found"))
+        );
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   }
 };
