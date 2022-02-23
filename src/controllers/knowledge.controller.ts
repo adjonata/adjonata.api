@@ -1,68 +1,106 @@
-import Knowledges, { IKnowledges } from "../models/knowledge.model";
+import KnowledgeService, {
+  KnowledgeCreateBody
+} from "../services/knowledge.service";
 import { Request, Response } from "express";
+import { createApiMessage, StatusCodes } from "../utils/http";
+
+interface KnowledgeCreateRequest extends Request {
+  body: KnowledgeCreateBody;
+}
+interface KnowledgeEditRequest extends KnowledgeCreateRequest {
+  params: {
+    id: string;
+  };
+}
+interface KnowledgeDeleteRequest extends Request {
+  params: {
+    id: string;
+  };
+}
 
 export default {
   /**
    * Get all Knowledges
    */
-  async getter(request: Request, response: Response) {
-    return await Knowledges.find()
-      .then(res => {
-        if (!res) {
-          return response.status(400).json({
-            msg: "Is Empty"
-          });
-        }
+  async getter(_request: Request, response: Response) {
+    try {
+      const knowledges = await KnowledgeService.list();
 
-        return response.status(200).json(res);
-      })
-      .catch(err => response.status(500).json(err));
+      return response.status(StatusCodes.SUCCESS).json(knowledges);
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   },
 
   /**
    * Create Knowledge
    */
-  async create(request: Request, response: Response) {
-    const { link, title, image }: IKnowledges = request.body;
+  async create(request: KnowledgeCreateRequest, response: Response) {
+    try {
+      const { link = "", title, image } = request.body;
 
-    return await Knowledges.create({ link, title, image })
-      .then(res => response.status(200).json(res))
-      .catch(err => response.status(500).json(err));
+      const knowledge = await KnowledgeService.create({
+        link,
+        title,
+        image
+      });
+
+      return response.status(StatusCodes.SUCCESS).json(knowledge);
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   },
 
   /**
    * Edit Knowledge
    */
-  async edit(request: Request, response: Response) {
-    const { id } = request.params;
-    const { link, title, image }: IKnowledges = request.body;
+  async edit(request: KnowledgeEditRequest, response: Response) {
+    try {
+      const { id } = request.params;
+      const { link = "", title, image } = request.body;
 
-    const query = {
-      _id: id
-    };
+      const body = {
+        link,
+        title,
+        image
+      };
 
-    const body = {
-      link,
-      title,
-      image
-    };
-    return await Knowledges.findOneAndUpdate(query, body)
-      .then(res => response.status(200).json({ msg: "Success in edit" }))
-      .catch(err => response.status(400).json({ msg: "Knowledge not found" }));
+      return await KnowledgeService.edit(id, body)
+        .then(() =>
+          response
+            .status(StatusCodes.SUCCESS)
+            .json(createApiMessage("Knowledge has been updated"))
+        )
+        .catch(() =>
+          response
+            .status(StatusCodes.NOT_FOUND)
+            .json(createApiMessage("Knowledge not found"))
+        );
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   },
 
   /**
    * Delete Knowledge
    */
-  async delete(request: Request, response: Response) {
-    const { id } = request.params;
+  async delete(request: KnowledgeDeleteRequest, response: Response) {
+    try {
+      const { id } = request.params;
 
-    const query = {
-      _id: id
-    };
-
-    return await Knowledges.findOneAndDelete(query)
-      .then(res => response.status(200).json({ msg: "Success in delete" }))
-      .catch(err => response.status(400).json({ msg: "Knowledge not found" }));
+      return await KnowledgeService.delete(id)
+        .then(() =>
+          response
+            .status(StatusCodes.SUCCESS)
+            .json(createApiMessage("Knowledge has been deleted"))
+        )
+        .catch(() =>
+          response
+            .status(StatusCodes.NOT_FOUND)
+            .json(createApiMessage("Knowledge not found"))
+        );
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   }
 };

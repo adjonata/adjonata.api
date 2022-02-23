@@ -1,35 +1,38 @@
-import About, { IAbout } from "../models/about.model";
 import { Request, Response } from "express";
+import AboutService, { AboutCreateBody } from "../services/about.service";
+import { createApiMessage, StatusCodes } from "../utils/http";
+
+interface AboutCreateRequest extends Request {
+  body: AboutCreateBody;
+}
 
 export default {
-  async getter(request: Request, response: Response) {
-    return await About.findOne()
-      .sort("-createdIn")
-      .then((res) => {
-        if (!res) {
-          return response.status(400).json({
-            msg: "Not found"
-          });
-        }
+  async getter(_request: Request, response: Response) {
+    try {
+      const about = await AboutService.getter();
 
-        return response.status(200).json(res);
-      })
-      .catch((err) => {
-        return response.status(500).json(err);
-      });
+      if (!about) {
+        return response
+          .status(StatusCodes.NOT_FOUND)
+          .json(createApiMessage("Not found"));
+      }
+
+      return response.status(StatusCodes.SUCCESS).json(about);
+    } catch (error) {
+      return response.status(500).json(createApiMessage(error));
+    }
   },
 
-  async create(request: Request, response: Response) {
-    const { description }: IAbout = request.body;
+  async create(request: AboutCreateRequest, response: Response) {
+    try {
+      const { description } = request.body;
+      const about = await AboutService.create({ description });
 
-    return await About.create({
-      description
-    })
-      .then((res) => {
-        return response.status(200).json(res);
-      })
-      .catch((err) => {
-        return response.status(500).json(err);
-      });
+      return response.status(StatusCodes.SUCCESS).json(about);
+    } catch (error) {
+      return response
+        .status(StatusCodes.SERVER_ERROR)
+        .json(createApiMessage(error));
+    }
   }
 };

@@ -7,8 +7,16 @@ if (fs.existsSync(__dirname + "/../.env")) {
   });
 }
 
-import mongoose from "mongoose";
+
+import { connectDB } from './config/mongoose'
 import app from "./app";
+
+
+let connectionString = "mongodb://localhost:27017/adjonataapi";
+
+if (process.env.CONNECTION) {
+  connectionString = process.env.CONNECTION;
+}
 
 function createServer(): void {
   const altPort = process.env.NODE_ENV === "production" ? 80 : 8080;
@@ -19,20 +27,9 @@ function createServer(): void {
   });
 }
 
-let connectionString = "mongodb://localhost:27017/adjonataapi";
-
-if (process.env.NODE_ENV === "production" && process.env.CONNECTION) {
-  connectionString = process.env.CONNECTION;
-}
-
-mongoose
-  .connect(connectionString!, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false
-  })
-  .then(createServer)
-  .catch((error) => {
-    console.log(error);
-  });
+connectDB(connectionString, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false
+}, createServer)

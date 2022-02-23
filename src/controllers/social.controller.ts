@@ -1,68 +1,104 @@
+import SocialService, { SocialCreateBody } from "../services/social.service";
 import { Request, Response } from "express";
-import Socials, { ISocial } from "../models/social.model";
+import { createApiMessage, StatusCodes } from "../utils/http";
+
+interface SocialCreateRequest extends Request {
+  body: SocialCreateBody;
+}
+interface SocialEditRequest extends SocialCreateRequest {
+  params: {
+    id: string;
+  };
+}
+interface SocialDeleteRequest extends Request {
+  params: {
+    id: string;
+  };
+}
 
 export default {
   /**
    * Get all Socials
    */
-  async getter(request: Request, response: Response) {
-    return await Socials.find()
-      .then(res => {
-        if (!res) {
-          return response.status(400).json({
-            msg: "Is Empty"
-          });
-        }
+  async getter(_request: Request, response: Response) {
+    try {
+      const socials = await SocialService.list();
 
-        return response.status(200).json(res);
-      })
-      .catch(err => response.status(500).json(err));
+      return response.status(StatusCodes.SUCCESS).json(socials);
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   },
 
   /**
    * Create Social
    */
-  async create(request: Request, response: Response) {
-    const { link, title, image }: ISocial = request.body;
+  async create(request: SocialCreateRequest, response: Response) {
+    try {
+      const { link = "", title, image } = request.body;
 
-    return await Socials.create({ link, title, image })
-      .then(res => response.status(200).json(res))
-      .catch(err => response.status(500).json(err));
+      const social = await SocialService.create({
+        link,
+        title,
+        image
+      });
+
+      return response.status(StatusCodes.SUCCESS).json(social);
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   },
 
   /**
    * Edit Social
    */
-  async edit(request: Request, response: Response) {
-    const { id } = request.params;
-    const { link, title, image }: ISocial = request.body;
+  async edit(request: SocialEditRequest, response: Response) {
+    try {
+      const { id } = request.params;
+      const { link = "", title, image } = request.body;
 
-    const query = {
-      _id: id
-    };
+      const body = {
+        link,
+        title,
+        image
+      };
 
-    const body = {
-      link,
-      title,
-      image
-    };
-    return await Socials.findOneAndUpdate(query, body)
-      .then(res => response.status(200).json({ msg: "Success in edit" }))
-      .catch(err => response.status(400).json({ msg: "Social not found" }));
+      return await SocialService.edit(id, body)
+        .then(() =>
+          response
+            .status(StatusCodes.SUCCESS)
+            .json(createApiMessage("Social has been updated"))
+        )
+        .catch(() =>
+          response
+            .status(StatusCodes.NOT_FOUND)
+            .json(createApiMessage("Social not found"))
+        );
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   },
 
   /**
    * Delete Social
    */
-  async delete(request: Request, response: Response) {
-    const { id } = request.params;
+  async delete(request: SocialDeleteRequest, response: Response) {
+    try {
+      const { id } = request.params;
 
-    const query = {
-      _id: id
-    };
-
-    return await Socials.findOneAndDelete(query)
-      .then(res => response.status(200).json({ msg: "Success in delete" }))
-      .catch(err => response.status(400).json({ msg: "Social not found" }));
+      return await SocialService.delete(id)
+        .then(() =>
+          response
+            .status(StatusCodes.SUCCESS)
+            .json(createApiMessage("Social has been deleted"))
+        )
+        .catch(() =>
+          response
+            .status(StatusCodes.NOT_FOUND)
+            .json(createApiMessage("Social not found"))
+        );
+    } catch (error) {
+      return response.status(StatusCodes.SERVER_ERROR).json(error);
+    }
   }
 };
