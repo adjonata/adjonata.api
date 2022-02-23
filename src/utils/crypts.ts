@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 
-const generate = async (value: string, salt: number = 12) => {
+const generate = async (value: string, salt: number = 12): Promise<string> => {
   return new Promise((resolve, reject) => {
     bcrypt
       .hash(value, salt)

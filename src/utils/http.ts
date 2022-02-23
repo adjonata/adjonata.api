@@ -3,9 +3,16 @@ export enum StatusCodes {
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
   NOT_FOUND = 404,
-  SERVER_ERROR = 500
+  CONFLICT = 409,
+  SERVER_ERROR = 500,
 }
 
 export interface ApiMessage {
-  message: string
+  msg: unknown;
+}
+
+export function createApiMessage(value: unknown): ApiMessage {
+  return {
+    msg: value
+  };
 }
