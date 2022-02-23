@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import AboutService, { AboutCreateBody } from "../services/about.service";
-import { ApiMessage, StatusCodes } from "../utils/http";
+import { createApiMessage, StatusCodes } from "../utils/http";
 
 interface AboutCreateRequest extends Request {
   body: AboutCreateBody;
@@ -12,14 +12,14 @@ export default {
       const about = await AboutService.getter();
 
       if (!about) {
-        return response.status(StatusCodes.NOT_FOUND).json({
-          message: "Not found"
-        } as ApiMessage);
+        return response
+          .status(StatusCodes.NOT_FOUND)
+          .json(createApiMessage("Not found"));
       }
 
       return response.status(StatusCodes.SUCCESS).json(about);
     } catch (error) {
-      return response.status(500).json({ message: error } as ApiMessage);
+      return response.status(500).json(createApiMessage(error));
     }
   },
 
@@ -30,9 +30,9 @@ export default {
 
       return response.status(StatusCodes.SUCCESS).json(about);
     } catch (error) {
-      return response.status(StatusCodes.SERVER_ERROR).json({
-        message: error
-      } as ApiMessage);
+      return response
+        .status(StatusCodes.SERVER_ERROR)
+        .json(createApiMessage(error));
     }
   }
 };
