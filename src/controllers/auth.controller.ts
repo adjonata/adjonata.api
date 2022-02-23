@@ -1,104 +1,137 @@
 import { Request, Response } from "express";
-import Auth, { IAuth } from "../models/auth.model";
-import * as crypts from "../utils/crypts";
-import * as token from "../utils/token";
+
+import AuthService, { UserCrudBody } from "../services/auth.service";
+import { createApiMessage, StatusCodes } from "../utils/http";
+
+interface AuthRequest extends Request {
+  body: UserCrudBody;
+}
+
+interface AuthDeleteRequest extends Request {
+  params: {
+    id: string;
+  };
+}
 
 export default {
-  async getter(request: Request, response: Response) {
-    return await Auth.find()
-      .then((users) => response.status(200).json(users))
-      .catch((err) => response.status(500).json(err));
-  },
-  async login(request: Request, response: Response) {
-    const { email, password }: IAuth = request.body;
+  async getter(_request: Request, response: Response) {
+    try {
+      const users = await AuthService.listUsers();
 
-    return await Auth.findOne({ email })
-      .then(async (user) => {
-        if (!user) {
-          return response.status(400).json({
-            msg: "User not found"
-          });
-        }
-
-        const comparePasswords = await crypts.compare(password, user.password);
-
-        if (comparePasswords) {
-          const userInfo = {
-            id: user.id,
-            email: user.email
-          };
-
-          const authorization = token.create(userInfo);
-
-          return response.status(200).json({
-            authorization,
-            userInfo
-          });
-        } else {
-          return response.status(400).json({ msg: "Invalid password" });
-        }
-      })
-      .catch((err) => {
-        return response.status(500).json(err);
-      });
-  },
-
-  async register(request: Request, response: Response) {
-    const enableRegistration = process.env.ENABLE_REGISTRATION === "true";
-
-    if (!enableRegistration) {
-      return response.status(400).json({
-        msg: "Registration is turned off"
-      });
+      return response.status(StatusCodes.SUCCESS).json(users);
+    } catch (error) {
+      return response
+        .status(StatusCodes.SERVER_ERROR)
+        .json(createApiMessage(error));
     }
+  },
+  async login(request: AuthRequest, response: Response) {
+    try {
+      const { email: requestEmail, password: requestPassword } = request.body;
 
-    const { email, password }: IAuth = request.body;
+      const user = await AuthService.findByEmail(requestEmail);
 
-    const findInDB = await Auth.findOne({ email }).exec();
-    if (findInDB) {
-      return response.status(403).json({
-        msg: "Email already registered"
+      if (user) {
+        return response
+          .status(StatusCodes.CONFLICT)
+          .json(createApiMessage("E-mail not registred"));
+      }
+
+      const isValidPassword = await AuthService.validateUserPassword(
+        requestPassword,
+        user
+      );
+
+      if (!isValidPassword) {
+        return response
+          .status(StatusCodes.UNAUTHORIZED)
+          .json(createApiMessage("Invalid credentials"));
+      }
+
+      const userTokenInformations = AuthService.generateTokenInformations(user);
+
+      const token = await AuthService.generateToken(userTokenInformations);
+
+      return response.status(StatusCodes.SUCCESS).json({
+        authorization: token,
+        userInfo: userTokenInformations
       });
+    } catch (error) {
+      return response
+        .status(StatusCodes.SERVER_ERROR)
+        .json(createApiMessage(error));
     }
-
-    return await crypts
-      .generate(password)
-      .then(async (passwordHash: string) => {
-        return await Auth.create({
-          email,
-          password: passwordHash
-        }).then((user) => {
-          const userInfo = {
-            id: user.id,
-            email: user.email
-          };
-
-          return response.status(200).json(userInfo);
-        });
-      })
-      .catch((err) => response.status(500).json(err));
   },
 
-  /**
-   * Delete User
-   */
-  async delete(request: Request, response: Response) {
-    const { id } = request.params;
+  async register(request: AuthRequest, response: Response) {
+    try {
+      const registrationIsEnabled = AuthService.registrationIsEnabled();
 
-    const query = {
-      _id: id
-    };
+      if (!registrationIsEnabled) {
+        return response
+          .status(StatusCodes.FORBIDDEN)
+          .json(createApiMessage("Registration is turned OFF"));
+      }
 
-    const count = await Auth.count({}).exec();
+      const { email: requestEmail, password: requestPassword } = request.body;
 
-    if (count < 2) {
-      return response.status(401).json({
-        msg: "Minimum number of registered users!"
+      const existsUserWithEmail = AuthService.findByEmail(requestEmail);
+
+      if (existsUserWithEmail) {
+        return response
+          .status(StatusCodes.CONFLICT)
+          .json(createApiMessage("Email already registered"));
+      }
+
+      const passwordHash = await AuthService.generatePassword(requestPassword);
+
+      const user = await AuthService.create({
+        email: requestEmail,
+        password: passwordHash
       });
-    }
 
-    return await Auth.findOneAndDelete(query)
-      .then((res) => response.status(200).json({ msg: "Success in delete" }))
-      .catch((err) => response.status(400).json({ msg: "User not found" }));
+      const userTokenInformations = AuthService.generateTokenInformations(user);
+
+      const token = await AuthService.generateToken(userTokenInformations);
+
+      return response.status(StatusCodes.SUCCESS).json({
+        authorization: token,
+        userInfo: userTokenInformations
+      });
+    } catch (error) {
+      return response
+        .status(StatusCodes.SERVER_ERROR)
+        .json(createApiMessage(error));
+    }
+  },
+
+  async delete(request: AuthDeleteRequest, response: Response) {
+    try {
+      const { id } = request.params;
+
+      const countUsers = await AuthService.countUsers();
+
+      if (countUsers < 2) {
+        return response
+          .status(StatusCodes.UNAUTHORIZED)
+          .json(createApiMessage("Minimum number of registered users!"));
+      }
+
+      const isDeleted = await AuthService.delete(id);
+
+      if (isDeleted) {
+        return response
+          .status(StatusCodes.SUCCESS)
+          .json(createApiMessage("Success in delete"));
+      } else {
+        return response
+          .status(StatusCodes.NOT_FOUND)
+          .json(createApiMessage("User not found"));
+      }
+    } catch (error) {
+      return response
+        .status(StatusCodes.SERVER_ERROR)
+        .json(createApiMessage(error));
+    }
   }
 };
