@@ -31,7 +31,7 @@ export default {
 
       const user = await AuthService.findByEmail(requestEmail);
 
-      if (user) {
+      if (!user) {
         return response
           .status(StatusCodes.CONFLICT)
           .json(createApiMessage("E-mail not registred"));
