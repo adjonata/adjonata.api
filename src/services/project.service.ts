@@ -20,6 +20,6 @@ export default {
     return ProjectModel.findOneAndDelete({ _id: id });
   },
   list() {
-    return ProjectModel.find();
+    return ProjectModel.find().sort({ spotlight: "desc" });
   }
 };
