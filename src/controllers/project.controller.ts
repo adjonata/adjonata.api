@@ -1,4 +1,5 @@
 import ProjectService, { ProjectCreateBody } from "../services/project.service";
+import LogService from "../services/log.service";
 import { Request, Response } from "express";
 import { createApiMessage, StatusCodes } from "../utils/http";
 
@@ -53,6 +54,12 @@ export default {
         description
       });
 
+      await LogService.create({
+        message: "Created a new project",
+        module: "Project",
+        type: "created"
+      });
+
       return response.status(StatusCodes.SUCCESS).json(project);
     } catch (error) {
       return response.status(StatusCodes.SERVER_ERROR).json(error);
@@ -84,11 +91,17 @@ export default {
       };
 
       return await ProjectService.edit(id, body)
-        .then(() =>
-          response
+        .then(async () => {
+          await LogService.create({
+            message: "Project has been updated",
+            module: "Project",
+            type: "updated"
+          });
+
+          return response
             .status(StatusCodes.SUCCESS)
-            .json(createApiMessage("Project has been updated"))
-        )
+            .json(createApiMessage("Project has been updated"));
+        })
         .catch(() =>
           response
             .status(StatusCodes.NOT_FOUND)
@@ -107,11 +120,17 @@ export default {
       const { id } = request.params;
 
       return await ProjectService.delete(id)
-        .then(() =>
-          response
+        .then(async () => {
+          await LogService.create({
+            message: "Project has been deleted",
+            module: "Project",
+            type: "deleted"
+          });
+
+          return response
             .status(StatusCodes.SUCCESS)
-            .json(createApiMessage("Project has been deleted"))
-        )
+            .json(createApiMessage("Project has been deleted"));
+        })
         .catch(() =>
           response
             .status(StatusCodes.NOT_FOUND)

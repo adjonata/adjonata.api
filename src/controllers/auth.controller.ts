@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import AuthService, { UserCrudBody } from "../services/auth.service";
+import LogService from "../services/log.service";
 import { createApiMessage, StatusCodes } from "../utils/http";
 
 interface AuthRequest extends Request {
@@ -90,6 +91,12 @@ export default {
         password: passwordHash
       });
 
+      await LogService.create({
+        message: "Created a new user",
+        module: "Auth",
+        type: "created"
+      });
+
       const userTokenInformations = AuthService.generateTokenInformations(user);
 
       const token = await AuthService.generateToken(userTokenInformations);
@@ -120,6 +127,11 @@ export default {
       const isDeleted = await AuthService.delete(id);
 
       if (isDeleted) {
+        await LogService.create({
+          message: "A user has been deleted",
+          module: "Auth",
+          type: "deleted"
+        });
         return response
           .status(StatusCodes.SUCCESS)
           .json(createApiMessage("Success in delete"));

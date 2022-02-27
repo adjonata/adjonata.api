@@ -1,6 +1,7 @@
 import SocialService, { SocialCreateBody } from "../services/social.service";
 import { Request, Response } from "express";
 import { createApiMessage, StatusCodes } from "../utils/http";
+import LogService from "../services/log.service";
 
 interface SocialCreateRequest extends Request {
   body: SocialCreateBody;
@@ -43,6 +44,12 @@ export default {
         image
       });
 
+      await LogService.create({
+        message: "Created a new social",
+        module: "Social",
+        type: "created"
+      });
+
       return response.status(StatusCodes.SUCCESS).json(social);
     } catch (error) {
       return response.status(StatusCodes.SERVER_ERROR).json(error);
@@ -64,11 +71,17 @@ export default {
       };
 
       return await SocialService.edit(id, body)
-        .then(() =>
-          response
+        .then(async () => {
+          await LogService.create({
+            message: "Social has been updated",
+            module: "Social",
+            type: "updated"
+          });
+
+          return response
             .status(StatusCodes.SUCCESS)
-            .json(createApiMessage("Social has been updated"))
-        )
+            .json(createApiMessage("Social has been updated"));
+        })
         .catch(() =>
           response
             .status(StatusCodes.NOT_FOUND)
@@ -87,11 +100,17 @@ export default {
       const { id } = request.params;
 
       return await SocialService.delete(id)
-        .then(() =>
-          response
+        .then(async () => {
+          await LogService.create({
+            message: "Social has been deleted",
+            module: "Social",
+            type: "deleted"
+          });
+
+          return response
             .status(StatusCodes.SUCCESS)
-            .json(createApiMessage("Social has been deleted"))
-        )
+            .json(createApiMessage("Social has been deleted"));
+        })
         .catch(() =>
           response
             .status(StatusCodes.NOT_FOUND)

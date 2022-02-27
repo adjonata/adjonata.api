@@ -1,6 +1,7 @@
 import KnowledgeService, {
   KnowledgeCreateBody
 } from "../services/knowledge.service";
+import LogService from "../services/log.service";
 import { Request, Response } from "express";
 import { createApiMessage, StatusCodes } from "../utils/http";
 
@@ -45,6 +46,12 @@ export default {
         image
       });
 
+      await LogService.create({
+        message: "Created a new knowledge",
+        module: "Knowledge",
+        type: "created"
+      });
+
       return response.status(StatusCodes.SUCCESS).json(knowledge);
     } catch (error) {
       return response.status(StatusCodes.SERVER_ERROR).json(error);
@@ -66,11 +73,17 @@ export default {
       };
 
       return await KnowledgeService.edit(id, body)
-        .then(() =>
-          response
+        .then(async () => {
+          await LogService.create({
+            message: "Knowledge has been updated",
+            module: "Knowledge",
+            type: "updated"
+          });
+
+          return response
             .status(StatusCodes.SUCCESS)
-            .json(createApiMessage("Knowledge has been updated"))
-        )
+            .json(createApiMessage("Knowledge has been updated"));
+        })
         .catch(() =>
           response
             .status(StatusCodes.NOT_FOUND)
@@ -89,11 +102,17 @@ export default {
       const { id } = request.params;
 
       return await KnowledgeService.delete(id)
-        .then(() =>
-          response
+        .then(async () => {
+          await LogService.create({
+            message: "Knowledge has been deleted",
+            module: "Knowledge",
+            type: "deleted"
+          });
+
+          return response
             .status(StatusCodes.SUCCESS)
-            .json(createApiMessage("Knowledge has been deleted"))
-        )
+            .json(createApiMessage("Knowledge has been deleted"));
+        })
         .catch(() =>
           response
             .status(StatusCodes.NOT_FOUND)
