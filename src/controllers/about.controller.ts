@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import AboutService, { AboutCreateBody } from "../services/about.service";
+import LogService, { LogCreateBody } from "../services/log.service";
 import { createApiMessage, StatusCodes } from "../utils/http";
 
 interface AboutCreateRequest extends Request {
@@ -26,7 +27,15 @@ export default {
   async create(request: AboutCreateRequest, response: Response) {
     try {
       const { description } = request.body;
-      const about = await AboutService.create({ description });
+      const about = await AboutService.create({ description }).then(
+        async () => {
+          await LogService.create({
+            message: "Created a new user about",
+            module: "About",
+            type: "created"
+          });
+        }
+      );
 
       return response.status(StatusCodes.SUCCESS).json(about);
     } catch (error) {

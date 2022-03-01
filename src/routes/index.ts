@@ -6,6 +6,7 @@ import ProjectRouter from "./project.routes";
 import SocialRouter from "./social.routes";
 import MultiRouter from "./multi.routes";
 import AuthRouter from "./auth.routes";
+import LogRouter from "./log.routes";
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/project", ProjectRouter);
 router.use("/social", SocialRouter);
 router.use("/multi", MultiRouter);
 router.use("/auth", AuthRouter);
+router.use("/log", LogRouter);
 
 export default router;
