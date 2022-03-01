@@ -28,12 +28,13 @@ export default {
     try {
       const { description } = request.body;
       const about = await AboutService.create({ description }).then(
-        async () => {
+        async (response) => {
           await LogService.create({
             message: "Created a new user about",
             module: "About",
             type: "created"
           });
+          return response;
         }
       );
 
