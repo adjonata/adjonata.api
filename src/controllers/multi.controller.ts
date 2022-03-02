@@ -3,6 +3,7 @@ import { StatusCodes } from "../utils/http";
 
 import AboutService from "../services/about.service";
 import KnowledgeService from "../services/knowledge.service";
+import ExperienceService from "../services/experience.service";
 import ProjectService from "../services/project.service";
 import SocialService from "../services/social.service";
 import LogService from "../services/log.service";
@@ -12,6 +13,7 @@ export default {
     try {
       const about = await AboutService.getter();
       const knowledges = await KnowledgeService.list();
+      const experiences = await ExperienceService.list();
       const projects = await ProjectService.list();
       const social = await SocialService.list();
       const lastUpdate = await LogService.getLast().then((log) =>
@@ -21,6 +23,7 @@ export default {
       return response.status(StatusCodes.SUCCESS).json({
         about,
         knowledges,
+        experiences,
         projects,
         social,
         lastUpdate
