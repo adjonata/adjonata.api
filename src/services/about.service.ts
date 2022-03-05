@@ -1,14 +1,10 @@
-import AboutModel from "../models/about.model";
-
-export interface AboutCreateBody {
-  description: string;
-}
+import { AboutModel, IAbout } from "../models";
 
 export default {
-  getter() {
+  list() {
     return AboutModel.findOne().sort("-createdIn");
   },
-  create(body: AboutCreateBody) {
+  create(body: IAbout) {
     return AboutModel.create(body);
   }
 };

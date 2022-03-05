@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 export interface IProject {
   image: string;
@@ -8,24 +8,21 @@ export interface IProject {
   link: string;
   spotlight: boolean;
   color?: string;
+  createdIn?: Date;
 }
 
-export interface IProjectDocument extends IProject, Document {
-  createdIn: Date;
-}
-
-const Projects = new Schema<IProjectDocument>({
-  image: Schema.Types.String,
-  title: Schema.Types.String,
-  description: Schema.Types.String,
+export const ProjectSchema = new Schema<IProject>({
+  image: String,
+  title: String,
+  description: String,
   technologies: [{ type: Schema.Types.ObjectId, ref: "Knowledges" }],
-  link: Schema.Types.String,
-  spotlight: Schema.Types.Boolean,
-  color: Schema.Types.String,
+  link: String,
+  spotlight: Boolean,
+  color: String,
   createdIn: {
     type: Date,
     default: Date.now
   }
 });
 
-export default mongoose.model<IProjectDocument>("Projects", Projects);
+export const ProjectModel = mongoose.model<IProject>("Projects", ProjectSchema);

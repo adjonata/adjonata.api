@@ -1,12 +1,10 @@
-import ExperienceService, {
-  ExperienceCreateBody
-} from "../services/experience.service";
-import LogService from "../services/log.service";
 import { Request, Response } from "express";
+import { IExperience } from "../models";
+import { ExperienceService, LogService } from "../services";
 import { createApiMessage, StatusCodes } from "../utils/http";
 
 interface ExperienceCreateRequest extends Request {
-  body: ExperienceCreateBody;
+  body: IExperience;
 }
 interface ExperienceEditRequest extends ExperienceCreateRequest {
   params: {

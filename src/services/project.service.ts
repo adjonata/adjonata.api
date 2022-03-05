@@ -1,9 +1,9 @@
-import ProjectModel, { IProject } from "../models/project.model";
+import { ProjectModel, IProject } from "../models";
 
 export default {
   create(body: IProject) {
-    return ProjectModel.create(body).then((doc) =>
-      doc.populate("technologies").execPopulate()
+    return ProjectModel.create(body).then(
+      async (doc) => await doc.populate("technologies")
     );
   },
   edit(id: string, body: IProject) {

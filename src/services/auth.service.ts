@@ -1,19 +1,15 @@
-import AuthModel, { IAuthDocument } from "../models/auth.model";
+import type { HydratedDocument } from "mongoose";
+import { AuthModel, IAuth } from "../models";
 import * as crypts from "../utils/crypts";
 import * as token from "../utils/token";
 
-export interface UserCrudBody {
-  email: string;
-  password: string;
-}
-
-interface UserTokenInformations {
+type UserTokenInformations = {
   id: string;
   email: string;
-}
+};
 
 export default {
-  create(body: UserCrudBody) {
+  create(body: IAuth) {
     return AuthModel.create(body);
   },
   delete(id: string) {
@@ -35,10 +31,12 @@ export default {
   generatePassword(password: string): Promise<string> {
     return crypts.generate(password);
   },
-  validateUserPassword(password: string, user: IAuthDocument) {
+  validateUserPassword(password: string, user: IAuth) {
     return crypts.compare(password, user.password);
   },
-  generateTokenInformations(user: IAuthDocument): UserTokenInformations {
+  generateTokenInformations(
+    user: HydratedDocument<IAuth>
+  ): UserTokenInformations {
     return {
       id: user.id,
       email: user.email

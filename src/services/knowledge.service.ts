@@ -1,16 +1,10 @@
-import KnowledgeModel from "../models/knowledge.model";
-
-export interface KnowledgeCreateBody {
-  link?: string;
-  title: string;
-  image: string;
-}
+import { KnowledgeModel, IKnowledge } from "../models";
 
 export default {
-  create(body: KnowledgeCreateBody) {
+  create(body: IKnowledge) {
     return KnowledgeModel.create(body);
   },
-  edit(id: string, body: KnowledgeCreateBody) {
+  edit(id: string, body: IKnowledge) {
     return KnowledgeModel.findOneAndUpdate({ _id: id }, body);
   },
   delete(id: string) {

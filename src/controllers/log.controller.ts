@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import LogService from "../services/log.service";
+import { LogService } from "../services";
 import { StatusCodes } from "../utils/http";
 
 export default {
