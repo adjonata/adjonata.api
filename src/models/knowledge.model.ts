@@ -6,7 +6,9 @@ export interface IKnowledges {
   image: string;
 }
 
-export interface IKnowledgesDocument extends IKnowledges, Document {}
+export interface IKnowledgesDocument extends IKnowledges, Document {
+  createdIn: Date;
+}
 
 const Knowledges = new Schema<IKnowledgesDocument>({
   link: Schema.Types.String,

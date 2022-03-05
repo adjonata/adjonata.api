@@ -5,7 +5,9 @@ export interface IAuth {
   password: string;
 }
 
-export interface IAuthDocument extends Document, IAuth {}
+export interface IAuthDocument extends Document, IAuth {
+  createdIn: Date;
+}
 
 const Auth = new Schema<IAuthDocument>({
   email: Schema.Types.String,

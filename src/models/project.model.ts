@@ -10,7 +10,9 @@ export interface IProject {
   color?: string;
 }
 
-export interface IProjectDocument extends IProject, Document {}
+export interface IProjectDocument extends IProject, Document {
+  createdIn: Date;
+}
 
 const Projects = new Schema<IProjectDocument>({
   image: Schema.Types.String,

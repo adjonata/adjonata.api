@@ -4,7 +4,9 @@ export interface IAbout {
   description: string;
 }
 
-export interface IAboutDocument extends Document, IAbout {}
+export interface IAboutDocument extends Document, IAbout {
+  createdIn: Date;
+}
 
 const About = new Schema<IAboutDocument>({
   description: Schema.Types.String,
