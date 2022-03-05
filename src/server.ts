@@ -7,10 +7,8 @@ if (fs.existsSync(__dirname + "/../.env")) {
   });
 }
 
-
-import { connectDB } from './config/mongoose'
+import { connectDB } from "./config/mongoose";
 import app from "./app";
-
 
 let connectionString = "mongodb://localhost:27017/adjonataapi";
 
@@ -27,9 +25,4 @@ function createServer(): void {
   });
 }
 
-connectDB(connectionString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false
-}, createServer)
+connectDB(connectionString, {}, createServer);

@@ -1,12 +1,10 @@
-import KnowledgeService, {
-  KnowledgeCreateBody
-} from "../services/knowledge.service";
-import LogService from "../services/log.service";
 import { Request, Response } from "express";
+import { IKnowledge } from "../models";
+import { KnowledgeService, LogService } from "../services";
 import { createApiMessage, StatusCodes } from "../utils/http";
 
 interface KnowledgeCreateRequest extends Request {
-  body: KnowledgeCreateBody;
+  body: IKnowledge;
 }
 interface KnowledgeEditRequest extends KnowledgeCreateRequest {
   params: {

@@ -1,8 +1,7 @@
-import ProjectService from "../services/project.service";
-import LogService from "../services/log.service";
 import { Request, Response } from "express";
 import { createApiMessage, StatusCodes } from "../utils/http";
 import { IProject } from "../models/project.model";
+import { LogService, ProjectService } from "../services";
 
 interface ProjectCreateRequest extends Request {
   body: IProject;

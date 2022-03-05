@@ -1,15 +1,12 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 export interface IAuth {
   email: string;
   password: string;
+  createdIn?: Date;
 }
 
-export interface IAuthDocument extends Document, IAuth {
-  createdIn: Date;
-}
-
-const Auth = new Schema<IAuthDocument>({
+export const AuthSchema = new Schema<IAuth>({
   email: Schema.Types.String,
   password: Schema.Types.String,
   createdIn: {
@@ -18,4 +15,4 @@ const Auth = new Schema<IAuthDocument>({
   }
 });
 
-export default mongoose.model<IAuthDocument>("Auth", Auth);
+export const AuthModel = mongoose.model<IAuth>("Auth", AuthSchema);

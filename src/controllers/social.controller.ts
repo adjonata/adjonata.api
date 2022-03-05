@@ -1,10 +1,10 @@
-import SocialService, { SocialCreateBody } from "../services/social.service";
 import { Request, Response } from "express";
 import { createApiMessage, StatusCodes } from "../utils/http";
-import LogService from "../services/log.service";
+import { ISocial } from "../models";
+import { LogService, SocialService } from "../services";
 
 interface SocialCreateRequest extends Request {
-  body: SocialCreateBody;
+  body: ISocial;
 }
 interface SocialEditRequest extends SocialCreateRequest {
   params: {

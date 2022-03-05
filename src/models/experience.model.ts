@@ -1,6 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
-import { IKnowledges } from "./knowledge.model";
-
+import mongoose, { Schema } from "mongoose";
 export interface IExperience {
   company: string;
   description: string;
@@ -9,29 +7,29 @@ export interface IExperience {
   startDate: Date;
   endDate: Date | null;
   isCurrently: boolean;
+  createdIn?: Date;
 }
 
-export interface IExperienceDocument extends IExperience, Document {
-  createdIn: Date;
-}
-
-const Experencie = new Schema<IExperienceDocument>({
-  company: Schema.Types.String,
-  description: Schema.Types.String,
-  office: Schema.Types.String,
+const ExperencieSchema = new Schema<IExperience>({
+  company: String,
+  description: String,
+  office: String,
   technologies: [
     {
       type: Schema.Types.ObjectId,
       ref: "Knowledges"
     }
   ],
-  startDate: Schema.Types.String,
-  endDate: Schema.Types.String,
-  isCurrently: Schema.Types.Boolean,
+  startDate: String,
+  endDate: String,
+  isCurrently: Boolean,
   createdIn: {
-    type: Schema.Types.Date,
+    type: Date,
     default: Date.now
   }
 });
 
-export default mongoose.model<IExperienceDocument>("Experencies", Experencie);
+export const ExperienceModel = mongoose.model<IExperience>(
+  "Experencies",
+  ExperencieSchema
+);

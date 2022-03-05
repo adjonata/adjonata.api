@@ -1,17 +1,18 @@
 import { Request, Response } from "express";
+import {
+  AboutService,
+  ExperienceService,
+  KnowledgeService,
+  LogService,
+  ProjectService,
+  SocialService
+} from "../services";
 import { StatusCodes } from "../utils/http";
-
-import AboutService from "../services/about.service";
-import KnowledgeService from "../services/knowledge.service";
-import ExperienceService from "../services/experience.service";
-import ProjectService from "../services/project.service";
-import SocialService from "../services/social.service";
-import LogService from "../services/log.service";
 
 export default {
   async getter(_request: Request, response: Response) {
     try {
-      const about = await AboutService.getter();
+      const about = await AboutService.list();
       const knowledges = await KnowledgeService.list();
       const experiences = await ExperienceService.list();
       const projects = await ProjectService.list();

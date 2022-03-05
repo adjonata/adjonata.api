@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
-import AboutService, { AboutCreateBody } from "../services/about.service";
-import LogService, { LogCreateBody } from "../services/log.service";
+import { IAbout } from "../models";
+import { AboutService, LogService } from "../services";
 import { createApiMessage, StatusCodes } from "../utils/http";
 
 interface AboutCreateRequest extends Request {
-  body: AboutCreateBody;
+  body: IAbout;
 }
 
 export default {
   async getter(_request: Request, response: Response) {
     try {
-      const about = await AboutService.getter();
+      const about = await AboutService.list();
 
       if (!about) {
         return response

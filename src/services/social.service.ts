@@ -1,16 +1,10 @@
-import SocialModel from "../models/social.model";
-
-export interface SocialCreateBody {
-  title: string;
-  image?: string;
-  link: string;
-}
+import { SocialModel, ISocial } from "../models";
 
 export default {
-  create(body: SocialCreateBody) {
+  create(body: ISocial) {
     return SocialModel.create(body);
   },
-  edit(id: string, body: SocialCreateBody) {
+  edit(id: string, body: ISocial) {
     return SocialModel.findOneAndUpdate({ _id: id }, body);
   },
   delete(id: string) {

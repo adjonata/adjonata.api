@@ -1,9 +1,7 @@
-import LogModel, { ILog } from "../models/log.model";
-
-export interface LogCreateBody extends ILog {}
+import { LogModel, ILog } from "../models";
 
 export default {
-  create(body: LogCreateBody) {
+  create(body: ILog) {
     return LogModel.create(body);
   },
   list() {

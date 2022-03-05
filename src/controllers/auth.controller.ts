@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
+import { IAuth } from "../models";
+import { AuthService, LogService } from "../services";
 
-import AuthService, { UserCrudBody } from "../services/auth.service";
-import LogService from "../services/log.service";
 import { createApiMessage, StatusCodes } from "../utils/http";
 
 interface AuthRequest extends Request {
-  body: UserCrudBody;
+  body: IAuth;
 }
 
 interface AuthDeleteRequest extends Request {

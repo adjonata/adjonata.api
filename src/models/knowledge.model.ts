@@ -1,23 +1,23 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-export interface IKnowledges {
+export interface IKnowledge {
   link?: string;
   title: string;
   image: string;
+  createdIn?: Date;
 }
 
-export interface IKnowledgesDocument extends IKnowledges, Document {
-  createdIn: Date;
-}
-
-const Knowledges = new Schema<IKnowledgesDocument>({
-  link: Schema.Types.String,
-  title: Schema.Types.String,
-  image: Schema.Types.String,
+export const KnowledgeSchema = new Schema<IKnowledge>({
+  link: String,
+  title: String,
+  image: String,
   createdIn: {
-    type: Schema.Types.Date,
+    type: Date,
     default: Date.now
   }
 });
 
-export default mongoose.model<IKnowledgesDocument>("Knowledges", Knowledges);
+export const KnowledgeModel = mongoose.model<IKnowledge>(
+  "Knowledges",
+  KnowledgeSchema
+);
