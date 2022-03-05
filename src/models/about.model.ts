@@ -1,10 +1,12 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface IAbout extends Document {
+export interface IAbout {
   description: string;
 }
 
-const About = new Schema({
+export interface IAboutDocument extends Document, IAbout {}
+
+const About = new Schema<IAboutDocument>({
   description: Schema.Types.String,
   createdIn: {
     type: Date,
@@ -12,4 +14,4 @@ const About = new Schema({
   }
 });
 
-export default mongoose.model<IAbout>("About", About);
+export default mongoose.model<IAboutDocument>("About", About);

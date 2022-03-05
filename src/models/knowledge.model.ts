@@ -1,12 +1,14 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface IKnowledges extends Document {
+export interface IKnowledges {
   link?: string;
   title: string;
   image: string;
 }
 
-const Knowledges = new Schema({
+export interface IKnowledgesDocument extends IKnowledges, Document {}
+
+const Knowledges = new Schema<IKnowledgesDocument>({
   link: Schema.Types.String,
   title: Schema.Types.String,
   image: Schema.Types.String,
@@ -16,4 +18,4 @@ const Knowledges = new Schema({
   }
 });
 
-export default mongoose.model<IKnowledges>("Knowledges", Knowledges);
+export default mongoose.model<IKnowledgesDocument>("Knowledges", Knowledges);

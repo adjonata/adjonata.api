@@ -7,11 +7,9 @@ export interface ILog {
   type: "created" | "updated" | "deleted";
 }
 
-interface ILogDocument extends Document, ILog {
-  createdIn: Date;
-}
+export interface ILogDocument extends Document, ILog {}
 
-const Log = new Schema({
+const Log = new Schema<ILogDocument>({
   message: Schema.Types.String,
   module: Schema.Types.String,
   type: Schema.Types.String,
