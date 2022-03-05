@@ -11,7 +11,9 @@ export interface IExperience {
   isCurrently: boolean;
 }
 
-export interface IExperienceDocument extends IExperience, Document {}
+export interface IExperienceDocument extends IExperience, Document {
+  createdIn: Date;
+}
 
 const Experencie = new Schema<IExperienceDocument>({
   company: Schema.Types.String,

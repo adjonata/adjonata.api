@@ -6,7 +6,9 @@ export interface ISocial {
   link: string;
 }
 
-export interface ISocialDocument extends Document, ISocial {}
+export interface ISocialDocument extends Document, ISocial {
+  createdIn: Date;
+}
 
 const Socials = new Schema<ISocialDocument>({
   title: Schema.Types.String,
