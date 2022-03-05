@@ -4,7 +4,7 @@ export interface LogCreateBody extends ILog {}
 
 export default {
   create(body: LogCreateBody) {
-    return LogModel.create({ ...body, createdIn: new Date() });
+    return LogModel.create(body);
   },
   list() {
     return LogModel.find();
