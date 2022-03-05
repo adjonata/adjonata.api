@@ -17,7 +17,7 @@ export default {
       _id: id
     });
   },
-  listUsers() {
+  list() {
     return AuthModel.find();
   },
   countUsers() {

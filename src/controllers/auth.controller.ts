@@ -17,7 +17,7 @@ interface AuthDeleteRequest extends Request {
 export default {
   async getter(_request: Request, response: Response) {
     try {
-      const users = await AuthService.listUsers();
+      const users = await AuthService.list();
 
       return response.status(StatusCodes.SUCCESS).json(users);
     } catch (error) {
