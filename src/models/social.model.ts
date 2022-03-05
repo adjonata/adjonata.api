@@ -1,12 +1,14 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface ISocial extends Document {
+export interface ISocial {
   title: string;
   image?: string;
   link: string;
 }
 
-const Socials = new Schema({
+export interface ISocialDocument extends Document, ISocial {}
+
+const Socials = new Schema<ISocialDocument>({
   title: Schema.Types.String,
   image: Schema.Types.String,
   link: Schema.Types.String,
@@ -16,4 +18,4 @@ const Socials = new Schema({
   }
 });
 
-export default mongoose.model<ISocial>("Socials", Socials);
+export default mongoose.model<ISocialDocument>("Socials", Socials);

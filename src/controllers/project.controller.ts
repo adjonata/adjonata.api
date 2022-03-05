@@ -1,10 +1,11 @@
-import ProjectService, { ProjectCreateBody } from "../services/project.service";
+import ProjectService from "../services/project.service";
 import LogService from "../services/log.service";
 import { Request, Response } from "express";
 import { createApiMessage, StatusCodes } from "../utils/http";
+import { IProject } from "../models/project.model";
 
 interface ProjectCreateRequest extends Request {
-  body: ProjectCreateBody;
+  body: IProject;
 }
 interface ProjectEditRequest extends ProjectCreateRequest {
   params: {
@@ -42,7 +43,8 @@ export default {
         spotlight,
         title,
         color = "#89eb34",
-        description = ""
+        description = "",
+        technologies
       } = request.body;
 
       const project = await ProjectService.create({
@@ -51,7 +53,8 @@ export default {
         spotlight,
         title,
         color,
-        description
+        description,
+        technologies
       });
 
       await LogService.create({
@@ -78,7 +81,8 @@ export default {
         spotlight,
         title,
         color = "#89eb34",
-        description = ""
+        description = "",
+        technologies
       } = request.body;
 
       const body = {
@@ -87,7 +91,8 @@ export default {
         spotlight,
         title,
         color,
-        description
+        description,
+        technologies
       };
 
       return await ProjectService.edit(id, body)

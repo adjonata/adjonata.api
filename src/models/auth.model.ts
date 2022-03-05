@@ -1,11 +1,13 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface IAuth extends Document {
+export interface IAuth {
   email: string;
   password: string;
 }
 
-const Auth = new Schema({
+export interface IAuthDocument extends Document, IAuth {}
+
+const Auth = new Schema<IAuthDocument>({
   email: Schema.Types.String,
   password: Schema.Types.String,
   createdIn: {
@@ -14,4 +16,4 @@ const Auth = new Schema({
   }
 });
 
-export default mongoose.model<IAuth>("Auth", Auth);
+export default mongoose.model<IAuthDocument>("Auth", Auth);

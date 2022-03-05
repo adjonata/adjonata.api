@@ -1,25 +1,20 @@
-import ProjectModel from "../models/project.model";
-
-export interface ProjectCreateBody {
-  image: string;
-  title: string;
-  description?: string;
-  link: string;
-  spotlight: boolean;
-  color?: string;
-}
+import ProjectModel, { IProject } from "../models/project.model";
 
 export default {
-  create(body: ProjectCreateBody) {
-    return ProjectModel.create(body);
+  create(body: IProject) {
+    return ProjectModel.create(body).then((doc) =>
+      doc.populate("technologies").execPopulate()
+    );
   },
-  edit(id: string, body: ProjectCreateBody) {
+  edit(id: string, body: IProject) {
     return ProjectModel.findOneAndUpdate({ _id: id }, body);
   },
   delete(id: string) {
     return ProjectModel.findOneAndDelete({ _id: id });
   },
   list() {
-    return ProjectModel.find().sort({ spotlight: "desc" });
+    return ProjectModel.find()
+      .sort({ spotlight: "desc" })
+      .populate("technologies");
   }
 };

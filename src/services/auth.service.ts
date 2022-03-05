@@ -1,4 +1,4 @@
-import AuthModel, { IAuth } from "../models/auth.model";
+import AuthModel, { IAuthDocument } from "../models/auth.model";
 import * as crypts from "../utils/crypts";
 import * as token from "../utils/token";
 
@@ -35,10 +35,10 @@ export default {
   generatePassword(password: string): Promise<string> {
     return crypts.generate(password);
   },
-  validateUserPassword(password: string, user: IAuth) {
+  validateUserPassword(password: string, user: IAuthDocument) {
     return crypts.compare(password, user.password);
   },
-  generateTokenInformations(user: IAuth): UserTokenInformations {
+  generateTokenInformations(user: IAuthDocument): UserTokenInformations {
     return {
       id: user.id,
       email: user.email
